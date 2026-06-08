@@ -22,7 +22,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
-          npm run build
+          npm run build -- --base=/lunch10/
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
