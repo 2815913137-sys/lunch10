@@ -201,7 +201,6 @@ export default function ParkMap({
                       className="animate-dash" 
                       opacity="0.8" 
                     />
-                    <circle cx={coord.x} cy={coord.y} r="25" fill="none" stroke="#f97316" strokeWidth="1" className="animate-ping" style={{ animationDuration: '3s' }} />
                   </g>
                 );
               })()
