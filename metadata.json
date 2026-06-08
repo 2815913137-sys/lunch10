@@ -1,0 +1,6 @@
+{
+  "name": "午饭搭子",
+  "description": "面向公司新人的午休1公里美食发现与低压力约饭社交破冰工具。",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
