@@ -15,6 +15,7 @@ interface ReviewModalProps {
   lunchMode: 'solo' | 'partner';
   onCompleteReview: (review: Review, hasUnlockedIcebreakerBadge: boolean) => void;
   onClose: () => void;
+  onViewOnMap?: () => void;
 }
 
 export default function ReviewModal({
@@ -22,7 +23,8 @@ export default function ReviewModal({
   restaurant,
   lunchMode,
   onCompleteReview,
-  onClose
+  onClose,
+  onViewOnMap
 }: ReviewModalProps) {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [partnerCheckedIn, setPartnerCheckedIn] = useState(false);
@@ -434,14 +436,25 @@ export default function ReviewModal({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-8 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-extrabold cursor-pointer transition shadow-xs flex items-center justify-center gap-1.5 mx-auto"
-          >
-            返回美食大厅
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto">
+            {onViewOnMap && (
+              <button
+                type="button"
+                onClick={onViewOnMap}
+                className="w-full sm:w-auto flex-1 px-5 py-2.5 bg-slate-900 hover:bg-slate-950 text-white rounded-lg text-xs font-extrabold cursor-pointer transition shadow-xs flex items-center justify-center gap-1.5"
+              >
+                🗺️ 点开地图查看足迹
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto flex-1 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-extrabold cursor-pointer transition shadow-xs flex items-center justify-center gap-1.5"
+            >
+              返回美食大厅
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
 

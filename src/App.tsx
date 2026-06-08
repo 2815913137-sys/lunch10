@@ -16,17 +16,19 @@ import DiscoverySection from './components/DiscoverySection';
 import MatchSection from './components/MatchSection';
 import ChatRoom from './components/ChatRoom';
 import ReviewModal from './components/ReviewModal';
+import ParkMap from './components/ParkMap';
 import { motion, AnimatePresence } from 'motion/react';
 import FoodBackground from './components/FoodBackground';
 
 export default function App() {
   // 1. 核心应用状态
   const [currentUser, setCurrentUser] = useState<UserType>(DEFAULT_USER);
-  const [currentMode, setCurrentMode] = useState<'home' | 'taste' | 'discovery' | 'match' | 'chat' | 'review' | 'persona'>('home');
+  const [currentMode, setCurrentMode] = useState<'home' | 'taste' | 'discovery' | 'match' | 'chat' | 'review' | 'persona' | 'map'>('home');
   const [lunchMode, setLunchMode] = useState<'solo' | 'partner'>('solo');
   const [tastePref, setTastePref] = useState<TastePreference | null>(null);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [visitedRestaurantIds, setVisitedRestaurantIds] = useState<string[]>(['r008']);
   
   // 收藏与游戏化徽章
   const [favorites, setFavorites] = useState<Restaurant[]>([
@@ -131,6 +133,15 @@ export default function App() {
       })
     );
 
+    if (selectedRestaurant) {
+      setVisitedRestaurantIds((prev) => {
+        if (!prev.includes(selectedRestaurant.restaurantId)) {
+          return [...prev, selectedRestaurant.restaurantId];
+        }
+        return prev;
+      });
+    }
+
     showToast(`感谢提交！本次午饭搭子圆满画上句号`);
   };
 
@@ -199,6 +210,16 @@ export default function App() {
             >
               👬 结伴搭子
             </button>
+            <button 
+              onClick={() => {
+                setCurrentMode('map');
+              }}
+              className={`px-3 py-1.5 text-xs font-extrabold rounded transition ${
+                currentMode === 'map' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-55'
+              }`}
+            >
+              🗺️ 园区地图
+            </button>
           </nav>
 
           {/* 右上角人设快捷键入口 */}
@@ -262,9 +283,18 @@ export default function App() {
                   </p>
 
                   {/* 公司配置指示器 */}
-                  <div className="flex items-center justify-center md:justify-start gap-1.5 text-[11px] font-mono text-orange-100 bg-white/10 border border-white/5 py-1.5 px-3 rounded w-fit mx-auto md:mx-0">
-                    <Navigation className="w-3.5 h-3.5" />
-                    当前定位：科兴科学园 (1KM 美食全域锁定) · 状态：在线
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-orange-100 bg-white/10 border border-white/5 py-1.5 px-3 rounded w-fit">
+                      <Navigation className="w-3.5 h-3.5 animate-pulse" />
+                      当前定位：科兴科学园 (1KM 美食全域锁定) · 状态：在线
+                    </div>
+                    
+                    <button
+                      onClick={() => setCurrentMode('map')}
+                      className="flex items-center gap-1.5 text-[11px] font-mono bg-white text-orange-600 hover:bg-orange-50 border border-orange-100 py-1.5 px-3.5 rounded-full transition duration-200 cursor-pointer shadow-md font-bold group"
+                    >
+                      🗺️ 点我查看 <span className="underline underline-offset-3 decoration-2 decoration-orange-500 font-extrabold group-hover:text-orange-700">"园区"</span> 电子地图/已打卡地点
+                    </button>
                   </div>
                 </div>
 
@@ -527,6 +557,11 @@ export default function App() {
                   setSelectedRestaurant(null);
                   setCurrentMode('home');
                 }}
+                onViewOnMap={() => {
+                  setSelectedPartner(null);
+                  setSelectedRestaurant(null);
+                  setCurrentMode('map');
+                }}
               />
             </motion.div>
           )}
@@ -549,6 +584,29 @@ export default function App() {
                 badges={badges}
                 favorites={favorites}
                 onRemoveFavorite={handleRemoveFavorite}
+              />
+            </motion.div>
+          )}
+
+          {/* 7. 园区电子地图独立大屏/查看已打卡和附近极美美食 */}
+          {currentMode === 'map' && (
+            <motion.div
+              key="map"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ParkMap 
+                restaurants={SAMPLE_RESTAURANTS}
+                visitedIds={visitedRestaurantIds}
+                onBack={() => setCurrentMode('home')}
+                onProceedSolo={(rest) => {
+                  setSelectedRestaurant(rest);
+                  setLunchMode('solo');
+                  setCurrentMode('review');
+                  showToast(`您已进入一人食门店：${rest.name} 本地锁定通道`);
+                }}
               />
             </motion.div>
           )}
