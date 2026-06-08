@@ -19,19 +19,13 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20 🔧
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: Install and Build 🔧
         run: |
-          npm install --legacy-peer-deps
-          npm run build -- --base=/lunch10/
+          npm ci
+          npm run build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist # The folder the action should deploy.
           branch: gh-pages # The branch the action should deploy to.
-
